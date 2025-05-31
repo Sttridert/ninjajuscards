@@ -17,22 +17,10 @@ let models = null;
 
 // Initialize database connection
 async function initializeDatabase() {
-  try {
-    console.log('🔄 Connecting to MongoDB...');
-    db = await dbConnection.connect();
-    models = new DatabaseModels(db);
-    
-    // Seed initial data if needed
-    await dbConnection.seedData();
-    
-    console.log('✅ MongoDB connected and initialized');
-  } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
-    console.log('⚠️  Using in-memory storage as fallback');
-    
-    // Fallback to in-memory storage if MongoDB is not available
-    models = createInMemoryModels();
-  }
+  console.log('📖 Using in-memory storage');
+  
+  // Always use in-memory storage
+  models = createInMemoryModels();
 }
 
 // Create in-memory models as fallback
@@ -411,33 +399,24 @@ app.get('/', (req, res) => {
 
 // Initialize database and start server
 async function startServer() {
-  // Start server first, then try to connect to database
+  // Initialize in-memory database first
+  await initializeDatabase();
+  
+  // Start server
   app.listen(port, '0.0.0.0', () => {
     console.log(`🚀 Study Cards API server running on port ${port}`);
-  });
-  
-  // Initialize database in background
-  initializeDatabase().then(() => {
-    console.log(`📖 Database: ${db ? 'MongoDB' : 'In-Memory (fallback)'}`);
-  }).catch(err => {
-    console.log(`📖 Database: In-Memory (fallback) - ${err.message}`);
+    console.log(`📖 Database: In-Memory`);
   });
 }
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\n🔄 Shutting down gracefully...');
-  if (dbConnection.isConnected) {
-    await dbConnection.close();
-  }
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
   console.log('\n🔄 Shutting down gracefully...');
-  if (dbConnection.isConnected) {
-    await dbConnection.close();
-  }
   process.exit(0);
 });
 
