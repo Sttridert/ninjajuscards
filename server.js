@@ -18,17 +18,17 @@ let models = null;
 // Initialize database connection
 async function initializeDatabase() {
   try {
-    console.log('🔄 Initializing database connection...');
+    console.log('🔄 Connecting to MongoDB...');
     db = await dbConnection.connect();
     models = new DatabaseModels(db);
     
     // Seed initial data if needed
     await dbConnection.seedData();
     
-    console.log('✅ Database initialized successfully');
+    console.log('✅ MongoDB connected and initialized');
   } catch (error) {
-    console.error('❌ Database initialization failed:', error.message);
-    console.log('⚠️  Falling back to in-memory storage for development');
+    console.error('❌ MongoDB connection failed:', error.message);
+    console.log('⚠️  Using in-memory storage as fallback');
     
     // Fallback to in-memory storage if MongoDB is not available
     models = createInMemoryModels();
