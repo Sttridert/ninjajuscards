@@ -561,24 +561,33 @@
         // Carregar dados do baralho
         async function loadDeck() {
             try {
+                console.log('Carregando baralho:', deckId);
+                
                 const [deckResponse, cardsResponse] = await Promise.all([
                     fetch(`${API_BASE}/decks/${deckId}`),
                     fetch(`${API_BASE}/cards?deck_id=${deckId}`)
                 ]);
 
+                console.log('Responses:', deckResponse.status, cardsResponse.status);
+
                 if (deckResponse.ok && cardsResponse.ok) {
                     currentDeck = await deckResponse.json();
                     cards = await cardsResponse.json();
+                    
+                    console.log('Dados carregados:', currentDeck, cards);
 
                     renderDeck();
                 } else {
+                    const deckError = !deckResponse.ok ? await deckResponse.text() : null;
+                    const cardsError = !cardsResponse.ok ? await cardsResponse.text() : null;
+                    console.error('Erro nas respostas:', { deckError, cardsError });
                     throw new Error('Baralho não encontrado');
                 }
             } catch (error) {
                 console.error('Erro ao carregar baralho:', error);
                 document.getElementById('loading').innerHTML = `
                     <i class="fas fa-exclamation-triangle"></i>
-                    <p>Erro ao carregar baralho</p>
+                    <p>Erro ao carregar baralho: ${error.message}</p>
                 `;
             }
         }
@@ -717,14 +726,30 @@
                 }
 
                 if (response.ok) {
+                    const savedCard = await response.json();
                     hideCardModal();
-                    loadDeck(); // Recarregar dados
+                    
+                    if (editingCardId) {
+                        // Atualizar card existente
+                        const cardIndex = cards.findIndex(c => c.id === editingCardId);
+                        if (cardIndex > -1) {
+                            cards[cardIndex] = savedCard;
+                        }
+                    } else {
+                        // Adicionar novo card
+                        cards.push(savedCard);
+                        currentDeck.card_count = cards.length;
+                    }
+                    
+                    // Atualizar a interface
+                    renderDeck();
                 } else {
-                    alert('Erro ao salvar card');
+                    const errorData = await response.json();
+                    alert('Erro ao salvar card: ' + (errorData.error || 'Erro desconhecido'));
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                alert('Erro ao salvar card');
+                alert('Erro ao salvar card: ' + error.message);
             }
         }
 
@@ -738,13 +763,22 @@
                     });
 
                     if (response.ok) {
-                        loadDeck(); // Recarregar dados
+                        // Remover card do array local
+                        const cardIndex = cards.findIndex(c => c.id === cardId);
+                        if (cardIndex > -1) {
+                            cards.splice(cardIndex, 1);
+                            currentDeck.card_count = cards.length;
+                        }
+                        
+                        // Atualizar a interface
+                        renderDeck();
                     } else {
-                        alert('Erro ao excluir card');
+                        const errorData = await response.json();
+                        alert('Erro ao excluir card: ' + (errorData.error || 'Erro desconhecido'));
                     }
                 } catch (error) {
                     console.error('Erro:', error);
-                    alert('Erro ao excluir card');
+                    alert('Erro ao excluir card: ' + error.message);
                 }
             }
         }
