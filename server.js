@@ -18,7 +18,7 @@ let models = null;
 // Initialize database connection
 async function initializeDatabase() {
   console.log('📖 Using in-memory storage');
-  
+
   // Always use in-memory storage
   models = createInMemoryModels();
 }
@@ -116,22 +116,29 @@ function createInMemoryModels() {
     },
     async createCard(data) {
       const card = {
-        id: (nextId++).toString(), deck_id: data.deck_id, front: data.front, back: data.back,
-        created_at: new Date(), last_studied: null, difficulty: 0
+        id: (nextId++).toString(),
+        deck_id: data.deck_id,
+        front: data.front,
+        back: data.back,
+        created_at: new Date(),
+        last_studied: null,
+        difficulty: 0
       };
       memoryData.cards.push(card);
-      
+
       // Update deck card count
       const deck = memoryData.decks.find(d => d.id === data.deck_id);
-      if (deck) deck.card_count = memoryData.cards.filter(c => c.deck_id === data.deck_id).length;
-      
+      if (deck) {
+        deck.card_count = memoryData.cards.filter(c => c.deck_id === data.deck_id).length;
+      }
+
       return card;
     },
     async updateCard(id, updates) {
       const card = memoryData.cards.find(c => c.id === id);
       if (card) {
         Object.assign(card, updates);
-        if (updates.difficulty !== undefined) card.last_studied = new Date();
+        card.last_studied = new Date();
         return card;
       }
       return null;
@@ -140,12 +147,15 @@ function createInMemoryModels() {
       const cardIndex = memoryData.cards.findIndex(c => c.id === id);
       if (cardIndex > -1) {
         const card = memoryData.cards[cardIndex];
+        const deckId = card.deck_id;
         memoryData.cards.splice(cardIndex, 1);
-        
+
         // Update deck card count
-        const deck = memoryData.decks.find(d => d.id === card.deck_id);
-        if (deck) deck.card_count = memoryData.cards.filter(c => c.deck_id === card.deck_id).length;
-        
+        const deck = memoryData.decks.find(d => d.id === deckId);
+        if (deck) {
+          deck.card_count = memoryData.cards.filter(c => c.deck_id === deckId).length;
+        }
+
         return true;
       }
       return false;
@@ -185,7 +195,7 @@ app.post('/api/folders', async (req, res) => {
     if (!name) {
       return res.status(400).json({ error: 'Name is required' });
     }
-    
+
     const folder = await models.createFolder({ name });
     res.status(201).json(folder);
   } catch (error) {
@@ -198,7 +208,7 @@ app.delete('/api/folders/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const success = await models.deleteFolder(id);
-    
+
     if (success) {
       res.status(204).send();
     } else {
@@ -230,11 +240,11 @@ app.get('/api/decks/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const deck = await models.getDeckById(id);
-    
+
     if (!deck) {
       return res.status(404).json({ error: 'Deck not found' });
     }
-    
+
     res.json(deck);
   } catch (error) {
     console.error('Error fetching deck:', error);
@@ -245,18 +255,18 @@ app.get('/api/decks/:id', async (req, res) => {
 app.post('/api/decks', async (req, res) => {
   try {
     const { name, description, folder_id, color } = req.body;
-    
+
     if (!name || !folder_id) {
       return res.status(400).json({ error: 'Name and folder_id are required' });
     }
-    
+
     const deck = await models.createDeck({
       name,
       description: description || '',
       folder_id,
       color: color || '#E3F2FD'
     });
-    
+
     res.status(201).json(deck);
   } catch (error) {
     console.error('Error creating deck:', error);
@@ -268,13 +278,13 @@ app.put('/api/decks/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const { name, description, color } = req.body;
-    
+
     const deck = await models.updateDeck(id, { name, description, color });
-    
+
     if (!deck) {
       return res.status(404).json({ error: 'Deck not found' });
     }
-    
+
     res.json(deck);
   } catch (error) {
     console.error('Error updating deck:', error);
@@ -286,7 +296,7 @@ app.delete('/api/decks/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const success = await models.deleteDeck(id);
-    
+
     if (success) {
       res.status(204).send();
     } else {
@@ -314,11 +324,11 @@ app.get('/api/cards/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const card = await models.getCardById(id);
-    
+
     if (!card) {
       return res.status(404).json({ error: 'Card not found' });
     }
-    
+
     res.json(card);
   } catch (error) {
     console.error('Error fetching card:', error);
@@ -329,11 +339,11 @@ app.get('/api/cards/:id', async (req, res) => {
 app.post('/api/cards', async (req, res) => {
   try {
     const { deck_id, front, back } = req.body;
-    
+
     if (!deck_id || !front || !back) {
       return res.status(400).json({ error: 'deck_id, front, and back are required' });
     }
-    
+
     const card = await models.createCard({ deck_id, front, back });
     res.status(201).json(card);
   } catch (error) {
@@ -346,13 +356,13 @@ app.put('/api/cards/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const { front, back, difficulty } = req.body;
-    
+
     const card = await models.updateCard(id, { front, back, difficulty });
-    
+
     if (!card) {
       return res.status(404).json({ error: 'Card not found' });
     }
-    
+
     res.json(card);
   } catch (error) {
     console.error('Error updating card:', error);
@@ -364,7 +374,7 @@ app.delete('/api/cards/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const success = await models.deleteCard(id);
-    
+
     if (success) {
       res.status(204).send();
     } else {
@@ -383,7 +393,7 @@ app.get('/api/search', async (req, res) => {
     if (!q) {
       return res.json({ decks: [], cards: [] });
     }
-    
+
     const results = await models.searchContent(q);
     res.json(results);
   } catch (error) {
@@ -401,7 +411,7 @@ app.get('/', (req, res) => {
 async function startServer() {
   // Initialize in-memory database first
   await initializeDatabase();
-  
+
   // Start server
   app.listen(port, '0.0.0.0', () => {
     console.log(`🚀 Study Cards API server running on port ${port}`);

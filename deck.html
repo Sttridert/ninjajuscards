@@ -738,13 +738,20 @@
                     } else {
                         // Adicionar novo card
                         cards.push(savedCard);
-                        currentDeck.card_count = cards.length;
                     }
                     
-                    // Atualizar a interface
+                    // Atualizar contagem no deck
+                    currentDeck.card_count = cards.length;
+                    
+                    // Forçar recarregamento dos dados para garantir sincronização
+                    setTimeout(() => {
+                        loadDeck();
+                    }, 100);
+                    
+                    // Atualizar a interface imediatamente
                     renderDeck();
                 } else {
-                    const errorData = await response.json();
+                    const errorData = await response.json().catch(() => ({ error: 'Erro de comunicação' }));
                     alert('Erro ao salvar card: ' + (errorData.error || 'Erro desconhecido'));
                 }
             } catch (error) {
@@ -767,13 +774,20 @@
                         const cardIndex = cards.findIndex(c => c.id === cardId);
                         if (cardIndex > -1) {
                             cards.splice(cardIndex, 1);
-                            currentDeck.card_count = cards.length;
                         }
                         
-                        // Atualizar a interface
+                        // Atualizar contagem no deck
+                        currentDeck.card_count = cards.length;
+                        
+                        // Forçar recarregamento dos dados para garantir sincronização
+                        setTimeout(() => {
+                            loadDeck();
+                        }, 100);
+                        
+                        // Atualizar a interface imediatamente
                         renderDeck();
                     } else {
-                        const errorData = await response.json();
+                        const errorData = await response.json().catch(() => ({ error: 'Erro de comunicação' }));
                         alert('Erro ao excluir card: ' + (errorData.error || 'Erro desconhecido'));
                     }
                 } catch (error) {
@@ -785,6 +799,11 @@
 
         // Iniciar estudo
         function startStudy() {
+            // Verificar se há cards antes de ir para o estudo
+            if (cards.length === 0) {
+                alert('Adicione pelo menos um card antes de estudar!');
+                return;
+            }
             window.location.href = `/study.html?id=${deckId}`;
         }
 
@@ -792,6 +811,24 @@
         function goBack() {
             window.location.href = '/';
         }
+
+        // Recarregar dados periodicamente para manter sincronização
+        function ensureDataSync() {
+            // Verificar se os dados ainda estão consistentes
+            if (currentDeck && cards) {
+                const actualCardCount = cards.length;
+                if (currentDeck.card_count !== actualCardCount) {
+                    currentDeck.card_count = actualCardCount;
+                    document.getElementById('card-count').innerHTML = `
+                        <i class="fas fa-layer-group"></i>
+                        ${actualCardCount} card${actualCardCount !== 1 ? 's' : ''}
+                    `;
+                }
+            }
+        }
+
+        // Executar sincronização a cada poucos segundos
+        setInterval(ensureDataSync, 2000);
 
         // Fechar modal ao clicar fora
         document.addEventListener('click', function(event) {
