@@ -435,13 +435,13 @@
             .container {
                 padding: 1rem;
             }
-            
+
             .deck-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 1rem;
             }
-            
+
             .cards-grid {
                 grid-template-columns: 1fr;
             }
@@ -569,7 +569,7 @@
                 if (deckResponse.ok && cardsResponse.ok) {
                     currentDeck = await deckResponse.json();
                     cards = await cardsResponse.json();
-                    
+
                     renderDeck();
                 } else {
                     throw new Error('Baralho não encontrado');
@@ -680,7 +680,7 @@
         function editCard(cardId) {
             editingCardId = cardId;
             const card = cards.find(c => c.id === cardId);
-            
+
             document.getElementById('modal-title').textContent = 'Editar Card';
             document.getElementById('save-btn').textContent = 'Salvar Alterações';
             document.getElementById('card-front').value = card.front;
@@ -692,10 +692,10 @@
         // Salvar card
         async function saveCard(event) {
             event.preventDefault();
-            
+
             const front = document.getElementById('card-front').value.trim();
             const back = document.getElementById('card-back').value.trim();
-            
+
             if (!front || !back) return;
 
             try {
