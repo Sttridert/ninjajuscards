@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -15,28 +15,70 @@ let data = {
   folders: [
     {
       id: 1,
-      name: "Programming",
+      name: "Programação",
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 2,
+      name: "Matemática",
       created_at: new Date().toISOString()
     }
   ],
   decks: [
     {
       id: 1,
-      name: "JavaScript Basics",
-      description: "Fundamental JavaScript concepts",
+      name: "JavaScript Básico",
+      description: "Conceitos fundamentais do JavaScript",
       folder_id: 1,
       color: "#E3F2FD",
       created_at: new Date().toISOString(),
-      card_count: 0
+      card_count: 2
+    },
+    {
+      id: 2,
+      name: "Álgebra Linear",
+      description: "Matrizes e vetores",
+      folder_id: 2,
+      color: "#F3E5F5",
+      created_at: new Date().toISOString(),
+      card_count: 1
     }
   ],
-  cards: []
+  cards: [
+    {
+      id: 1,
+      deck_id: 1,
+      front: "O que é uma variável em JavaScript?",
+      back: "Uma variável é um container que armazena dados. Pode ser declarada com var, let ou const.",
+      created_at: new Date().toISOString(),
+      last_studied: null,
+      difficulty: 0
+    },
+    {
+      id: 2,
+      deck_id: 1,
+      front: "Qual a diferença entre let e const?",
+      back: "let permite reatribuição de valor, const não permite. Ambas têm escopo de bloco.",
+      created_at: new Date().toISOString(),
+      last_studied: null,
+      difficulty: 0
+    },
+    {
+      id: 3,
+      deck_id: 2,
+      front: "O que é uma matriz identidade?",
+      back: "É uma matriz quadrada onde os elementos da diagonal principal são 1 e os demais são 0.",
+      created_at: new Date().toISOString(),
+      last_studied: null,
+      difficulty: 0
+    }
+  ]
 };
 
 let nextId = {
-  folders: 2,
-  decks: 2,
-  cards: 1
+  folders: 3,
+  decks: 3,
+  cards: 4
 };
 
 // Helper function to update card count
@@ -46,6 +88,9 @@ function updateDeckCardCount(deckId) {
     deck.card_count = data.cards.filter(c => c.deck_id === deckId).length;
   }
 }
+
+// Update initial card counts
+data.decks.forEach(deck => updateDeckCardCount(deck.id));
 
 // API Routes
 
@@ -268,8 +313,8 @@ app.get('/api/search', (req, res) => {
   res.json({ decks: matchingDecks, cards: matchingCards });
 });
 
-// Serve Vue app
-app.get('*', (req, res) => {
+// Serve index.html for all other routes
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

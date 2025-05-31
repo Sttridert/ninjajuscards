@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-const API_BASE = 'http://localhost:8000/api'
+const API_BASE = '/api'
 
 export const useStudyStore = defineStore('study', {
   state: () => ({
