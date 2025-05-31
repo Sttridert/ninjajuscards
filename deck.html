@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Baralho - Study Cards</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Variáveis CSS */
+        :root {
+            --primary-50: #F0F9FF;
+            --primary-100: #E0F2FE;
+            --primary-200: #BAE6FD;
+            --primary-300: #7DD3FC;
+            --primary-400: #38BDF8;
+            --primary-500: #0EA5E9;
+            --primary-600: #0284C7;
+            --primary-700: #0369A1;
+            --text-600: #475569;
+            --text-700: #334155;
+            --text-900: #0F172A;
+            --border-200: #E2E8F0;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --error-500: #EF4444;
+            --error-600: #DC2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+            min-height: 100vh;
+            color: var(--text-700);
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary-700);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .deck-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15);
+        }
+
+        .deck-info h1 {
+            font-size: 2rem;
+            color: var(--text-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .deck-description {
+            color: var(--text-600);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .deck-stats {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-600);
+        }
+
+        .deck-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--primary-600);
+            border: 1px solid var(--primary-200);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background: var(--gray-100);
+            color: var(--text-700);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--gray-200);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .study-card {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border-radius: 16px;
+        }
+
+        .study-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 50%, var(--primary-200) 100%);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E9D5FF 50%, #D8B4FE 100%);
+            transform: rotateY(180deg);
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-900);
+            font-weight: 500;
+            word-wrap: break-word;
+        }
+
+        .card-label {
+            position: absolute;
+            top: -1rem;
+            right: -1rem;
+            background: var(--primary-600);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .card-back .card-label {
+            background: #9333EA;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .study-card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn.edit {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-600);
+        }
+
+        .action-btn.delete {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--error-600);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-600);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-300);
+            display: block;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1rem;
+            color: var(--text-600);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-500);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Modal para criar/editar card */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-200);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-900);
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: rgba(248, 250, 252, 0.8);
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-400);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-200);
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-600);
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--gray-200);
+            color: var(--text-900);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .deck-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Study Cards</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
+        </button>
+
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Carregando baralho...</p>
+        </div>
+
+        <div id="deck-content" style="display: none;">
+            <header class="deck-header">
+                <div class="deck-info">
+                    <h1 id="deck-title">Carregando...</h1>
+                    <p id="deck-description" class="deck-description"></p>
+                    <div class="deck-stats">
+                        <span id="card-count">
+                            <i class="fas fa-layer-group"></i>
+                            0 cards
+                        </span>
+                    </div>
+                </div>
+                <div class="deck-actions">
+                    <button id="study-btn" class="btn primary" onclick="startStudy()" style="display: none;">
+                        <i class="fas fa-play"></i>
+                        Estudar Agora
+                    </button>
+                    <button class="btn secondary" onclick="showAddCardModal()">
+                        <i class="fas fa-plus"></i>
+                        Adicionar Card
+                    </button>
+                </div>
+            </header>
+
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <i class="fas fa-layer-group"></i>
+                <h3>Nenhum card neste baralho</h3>
+                <p>Adicione seu primeiro card de estudo para começar</p>
+                <button class="btn primary" onclick="showAddCardModal()">
+                    <i class="fas fa-plus"></i>
+                    Adicionar Primeiro Card
+                </button>
+            </div>
+
+            <div id="cards-container" class="cards-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar/editar card -->
+    <div id="cardModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Adicionar Novo Card</h3>
+                <button class="close-btn" onclick="hideCardModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="saveCard(event)">
+                    <div class="form-group">
+                        <label for="card-front">Frente do Card</label>
+                        <textarea id="card-front" placeholder="Digite a pergunta ou prompt..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-back">Verso do Card</label>
+                        <textarea id="card-back" placeholder="Digite a resposta ou explicação..." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn secondary" onclick="hideCardModal()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn primary" id="save-btn">
+                            Criar Card
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentDeck = null;
+        let cards = [];
+        let editingCardId = null;
+
+        // Obter ID do baralho da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const deckId = parseInt(urlParams.get('id'));
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            if (deckId) {
+                loadDeck();
+            } else {
+                window.location.href = '/';
+            }
+        });
+
+        // Carregar dados do baralho
+        async function loadDeck() {
+            try {
+                const [deckResponse, cardsResponse] = await Promise.all([
+                    fetch(`${API_BASE}/decks/${deckId}`),
+                    fetch(`${API_BASE}/cards?deck_id=${deckId}`)
+                ]);
+
+                if (deckResponse.ok && cardsResponse.ok) {
+                    currentDeck = await deckResponse.json();
+                    cards = await cardsResponse.json();
+                    
+                    renderDeck();
+                } else {
+                    throw new Error('Baralho não encontrado');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar baralho:', error);
+                document.getElementById('loading').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Erro ao carregar baralho</p>
+                `;
+            }
+        }
+
+        // Renderizar baralho
+        function renderDeck() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('deck-content').style.display = 'block';
+
+            // Cabeçalho
+            document.getElementById('deck-title').textContent = currentDeck.name;
+            if (currentDeck.description) {
+                document.getElementById('deck-description').textContent = currentDeck.description;
+                document.getElementById('deck-description').style.display = 'block';
+            }
+            document.getElementById('card-count').innerHTML = `
+                <i class="fas fa-layer-group"></i>
+                ${cards.length} card${cards.length !== 1 ? 's' : ''}
+            `;
+
+            // Botão de estudar
+            if (cards.length > 0) {
+                document.getElementById('study-btn').style.display = 'inline-flex';
+                document.getElementById('empty-state').style.display = 'none';
+                renderCards();
+            } else {
+                document.getElementById('study-btn').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'block';
+            }
+        }
+
+        // Renderizar cards
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = cards.map(card => `
+                <div class="study-card" id="card-${card.id}" onclick="flipCard(${card.id})">
+                    <div class="card-side card-front">
+                        <div class="card-content">
+                            <div class="card-text">${formatText(card.front)}</div>
+                            <div class="card-label">Frente</div>
+                        </div>
+                        <div class="card-actions" onclick="event.stopPropagation();">
+                            <button class="action-btn edit" onclick="editCard(${card.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="deleteCard(${card.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-side card-back">
+                        <div class="card-content">
+                            <div class="card-text">${formatText(card.back)}</div>
+                            <div class="card-label">Verso</div>
+                        </div>
+                        <div class="card-actions" onclick="event.stopPropagation();">
+                            <button class="action-btn edit" onclick="editCard(${card.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="deleteCard(${card.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Formatar texto
+        function formatText(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // Virar card
+        function flipCard(cardId) {
+            const cardElement = document.getElementById(`card-${cardId}`);
+            cardElement.classList.toggle('flipped');
+        }
+
+        // Modal de card
+        function showAddCardModal() {
+            editingCardId = null;
+            document.getElementById('modal-title').textContent = 'Adicionar Novo Card';
+            document.getElementById('save-btn').textContent = 'Criar Card';
+            document.getElementById('card-front').value = '';
+            document.getElementById('card-back').value = '';
+            document.getElementById('cardModal').classList.add('active');
+            document.getElementById('card-front').focus();
+        }
+
+        function hideCardModal() {
+            document.getElementById('cardModal').classList.remove('active');
+        }
+
+        // Editar card
+        function editCard(cardId) {
+            editingCardId = cardId;
+            const card = cards.find(c => c.id === cardId);
+            
+            document.getElementById('modal-title').textContent = 'Editar Card';
+            document.getElementById('save-btn').textContent = 'Salvar Alterações';
+            document.getElementById('card-front').value = card.front;
+            document.getElementById('card-back').value = card.back;
+            document.getElementById('cardModal').classList.add('active');
+            document.getElementById('card-front').focus();
+        }
+
+        // Salvar card
+        async function saveCard(event) {
+            event.preventDefault();
+            
+            const front = document.getElementById('card-front').value.trim();
+            const back = document.getElementById('card-back').value.trim();
+            
+            if (!front || !back) return;
+
+            try {
+                let response;
+                if (editingCardId) {
+                    // Editar card existente
+                    response = await fetch(`${API_BASE}/cards/${editingCardId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ front, back })
+                    });
+                } else {
+                    // Criar novo card
+                    response = await fetch(`${API_BASE}/cards`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ deck_id: deckId, front, back })
+                    });
+                }
+
+                if (response.ok) {
+                    hideCardModal();
+                    loadDeck(); // Recarregar dados
+                } else {
+                    alert('Erro ao salvar card');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao salvar card');
+            }
+        }
+
+        // Deletar card
+        async function deleteCard(cardId) {
+            const card = cards.find(c => c.id === cardId);
+            if (confirm(`Tem certeza que deseja excluir este card?\n\nFrente: ${card.front}`)) {
+                try {
+                    const response = await fetch(`${API_BASE}/cards/${cardId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        loadDeck(); // Recarregar dados
+                    } else {
+                        alert('Erro ao excluir card');
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert('Erro ao excluir card');
+                }
+            }
+        }
+
+        // Iniciar estudo
+        function startStudy() {
+            window.location.href = `/study.html?id=${deckId}`;
+        }
+
+        // Voltar
+        function goBack() {
+            window.location.href = '/';
+        }
+
+        // Fechar modal ao clicar fora
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
