@@ -1,12 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Cards - Aprendizado Interativo</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Study Cards - Sistema de Flashcards</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* CSS Reset e Variáveis */
         * {
             margin: 0;
             padding: 0;
@@ -14,106 +14,89 @@
         }
 
         :root {
-            --primary-50: #F0F9FF;
-            --primary-100: #E0F2FE;
-            --primary-200: #BAE6FD;
-            --primary-300: #7DD3FC;
-            --primary-400: #38BDF8;
-            --primary-500: #0EA5E9;
-            --primary-600: #0284C7;
-            --primary-700: #0369A1;
+            --primary-50: #f0f9ff;
+            --primary-100: #e0f2fe;
+            --primary-200: #bae6fd;
+            --primary-300: #7dd3fc;
+            --primary-400: #38bdf8;
+            --primary-500: #0ea5e9;
+            --primary-600: #0284c7;
+            --primary-700: #0369a1;
+            --primary-800: #075985;
+            --primary-900: #0c4a6e;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --text-50: #f8fafc;
+            --text-100: #f1f5f9;
+            --text-200: #e2e8f0;
+            --text-300: #cbd5e1;
+            --text-400: #94a3b8;
+            --text-500: #64748b;
             --text-600: #475569;
             --text-700: #334155;
-            --text-900: #0F172A;
-            --border-200: #E2E8F0;
-            --gray-100: #F1F5F9;
-            --gray-200: #E2E8F0;
+            --text-800: #1e293b;
+            --text-900: #0f172a;
+            
+            --border-100: #f1f5f9;
+            --border-200: #e2e8f0;
+            --border-300: #cbd5e1;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--gray-50) 100%);
             min-height: 100vh;
-            color: var(--text-700);
+            color: var(--text-800);
+            line-height: 1.6;
         }
 
-        /* Navegação */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-200);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--primary-700);
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .nav-brand i {
-            font-size: 2rem;
-        }
-
-        /* Container principal */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
 
-        /* Cabeçalho da página */
-        .page-header {
+        header {
             text-align: center;
             margin-bottom: 3rem;
-            padding: 2rem 0;
         }
 
-        .page-title {
+        h1 {
             font-size: 3rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-            background-clip: text;
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-            animation: titleFloat 3s ease-in-out infinite;
+            background-clip: text;
+            margin-bottom: 0.5rem;
         }
 
-        @keyframes titleFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .page-subtitle {
-            font-size: 1.25rem;
+        .subtitle {
             color: var(--text-600);
-            max-width: 600px;
-            margin: 0 auto;
+            font-size: 1.25rem;
+            font-weight: 400;
         }
 
-        /* Ações rápidas */
-        .quick-actions {
+        .actions-bar {
             display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15);
         }
 
         .btn {
@@ -127,46 +110,49 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
+            font-size: 0.95rem;
         }
 
         .btn.primary {
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            background: var(--primary-600);
             color: white;
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
         }
 
         .btn.primary:hover {
+            background: var(--primary-700);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
         }
 
         .btn.secondary {
-            background: rgba(255, 255, 255, 0.8);
-            color: var(--primary-600);
-            border: 1px solid var(--primary-200);
-            backdrop-filter: blur(10px);
+            background: var(--gray-200);
+            color: var(--text-700);
         }
 
         .btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.95);
-            transform: translateY(-2px);
+            background: var(--gray-300);
+            color: var(--text-900);
         }
 
-        /* Pastas */
-        .folder {
-            background: rgba(255, 255, 255, 0.7);
+        .folders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .folder-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 2rem;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15);
+            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1);
             transition: all 0.3s ease;
+            border: 1px solid var(--border-200);
         }
 
-        .folder:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 48px rgba(14, 165, 233, 0.2);
+        .folder-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
         }
 
         .folder-header {
@@ -174,19 +160,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-200);
-        }
-
-        .folder-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .folder-icon {
-            font-size: 1.5rem;
-            color: var(--primary-600);
         }
 
         .folder-name {
@@ -195,35 +168,28 @@
             color: var(--text-900);
         }
 
-        .deck-count {
-            background: var(--primary-100);
-            color: var(--primary-700);
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
+        .folder-actions {
+            display: flex;
+            gap: 0.5rem;
         }
 
-        /* Grid de baralhos */
         .decks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
         }
 
         .deck-card {
-            position: relative;
+            background: white;
             border-radius: 16px;
             padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.1);
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-            min-height: 160px;
+            border: 1px solid var(--border-200);
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
 
         .deck-card:hover {
@@ -287,38 +253,39 @@
 
         .study-btn:hover {
             background: var(--primary-700);
-            transform: scale(1.05);
         }
 
-        /* Estados vazios */
-        .empty-state {
+        .empty-folder {
             text-align: center;
-            padding: 4rem 1rem;
+            color: var(--text-500);
+            font-style: italic;
+            padding: 2rem;
+            border: 2px dashed var(--border-300);
+            border-radius: 12px;
+            background: var(--gray-50);
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 4rem;
             color: var(--text-600);
         }
 
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-300);
-            display: block;
+        .loading i {
+            font-size: 2rem;
+            color: var(--primary-500);
+            animation: spin 1s linear infinite;
         }
 
-        .empty-state h3 {
-            font-size: 1.5rem;
-            color: var(--text-700);
-            margin-bottom: 1rem;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .empty-state p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Modais */
+        /* Modal Styles */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -326,45 +293,40 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
             backdrop-filter: blur(4px);
         }
 
         .modal-overlay.active {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
         }
 
         .modal {
             background: white;
             border-radius: 20px;
-            width: 100%;
+            width: 90%;
             max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            animation: modalSlideIn 0.3s ease-out;
+            transform: translateY(-30px) scale(0.95);
+            transition: all 0.3s ease;
         }
 
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+        .modal-overlay.active .modal {
+            transform: translateY(0) scale(1);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 1.5rem 1rem;
+            padding: 24px 24px 16px;
             border-bottom: 1px solid var(--border-200);
         }
 
@@ -394,17 +356,17 @@
             color: var(--text-900);
         }
 
-        .modal-body {
-            padding: 1.5rem;
+        .modal-form {
+            padding: 24px;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
             font-weight: 600;
             color: var(--text-900);
         }
@@ -413,61 +375,38 @@
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 12px 16px;
             border: 2px solid var(--border-200);
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.2s ease;
             font-family: inherit;
-            background: rgba(248, 250, 252, 0.8);
+            background: var(--gray-50);
         }
 
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--primary-400);
+            border-color: var(--primary-500);
             background: white;
             box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
         .form-actions {
             display: flex;
-            gap: 0.75rem;
+            gap: 12px;
             justify-content: flex-end;
-            padding-top: 1rem;
+            padding-top: 16px;
             border-top: 1px solid var(--border-200);
         }
 
-        /* Loading */
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem 1rem;
-            color: var(--text-600);
-        }
-
-        .loading i {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--primary-500);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsivo */
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
             }
             
-            .page-title {
+            h1 {
                 font-size: 2rem;
             }
             
@@ -484,41 +423,26 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <i class="fas fa-graduation-cap"></i>
-                <span>Study Cards</span>
-            </div>
-        </div>
-    </nav>
-
     <div class="container">
-        <header class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-graduation-cap"></i>
-                Study Cards
-            </h1>
-            <p class="page-subtitle">Organize seu aprendizado com cards animados e lúdicos</p>
+        <header>
+            <h1>📚 Study Cards</h1>
+            <p class="subtitle">Organize seus estudos com flashcards inteligentes</p>
         </header>
 
-        <div class="quick-actions">
+        <div class="actions-bar">
+            <h2>Suas Pastas de Estudo</h2>
             <button class="btn primary" onclick="showCreateFolderModal()">
                 <i class="fas fa-folder-plus"></i>
                 Nova Pasta
             </button>
-            <button class="btn secondary" onclick="showCreateDeckModal()">
-                <i class="fas fa-plus"></i>
-                Novo Baralho
-            </button>
         </div>
 
-        <div id="loading" class="loading" style="display: none;">
-            <i class="fas fa-spinner"></i>
-            <p>Carregando seus materiais de estudo...</p>
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando dados...</p>
         </div>
 
-        <div id="content"></div>
+        <div id="content" class="folders-grid"></div>
     </div>
 
     <!-- Modal para criar pasta -->
@@ -530,22 +454,20 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <form onsubmit="createFolder(event)">
-                    <div class="form-group">
-                        <label for="folderName">Nome da Pasta</label>
-                        <input type="text" id="folderName" placeholder="Digite o nome da pasta..." required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn secondary" onclick="hideCreateFolderModal()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn primary">
-                            Criar Pasta
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <form class="modal-form" onsubmit="createFolder(event)">
+                <div class="form-group">
+                    <label for="folderName">Nome da Pasta</label>
+                    <input type="text" id="folderName" placeholder="Digite o nome da pasta..." required autofocus>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn secondary" onclick="hideCreateFolderModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn primary">
+                        Criar Pasta
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -558,32 +480,30 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <form onsubmit="createDeck(event)">
-                    <div class="form-group">
-                        <label for="deckName">Nome do Baralho</label>
-                        <input type="text" id="deckName" placeholder="Digite o nome do baralho..." required>
-                    </div>
-                    <div class="form-group">
-                        <label for="deckDescription">Descrição (opcional)</label>
-                        <textarea id="deckDescription" rows="3" placeholder="Descreva o conteúdo deste baralho..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="deckFolder">Pasta</label>
-                        <select id="deckFolder" required>
-                            <option value="">Selecione uma pasta</option>
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn secondary" onclick="hideCreateDeckModal()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn primary">
-                            Criar Baralho
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <form class="modal-form" onsubmit="createDeck(event)">
+                <div class="form-group">
+                    <label for="deckName">Nome do Baralho</label>
+                    <input type="text" id="deckName" placeholder="Digite o nome do baralho..." required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="deckDescription">Descrição (opcional)</label>
+                    <textarea id="deckDescription" placeholder="Descreva o conteúdo deste baralho..." rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="deckFolder">Pasta</label>
+                    <select id="deckFolder" required>
+                        <option value="">Selecione uma pasta</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn secondary" onclick="hideCreateDeckModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn primary">
+                        Criar Baralho
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -612,6 +532,10 @@
                     fetch(`${API_BASE}/decks`)
                 ]);
                 
+                if (!foldersResponse.ok || !decksResponse.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                
                 appState.folders = await foldersResponse.json();
                 appState.decks = await decksResponse.json();
                 
@@ -619,10 +543,14 @@
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
                 document.getElementById('content').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div style="text-align: center; padding: 2rem; color: var(--text-600);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
                         <h3>Erro ao carregar dados</h3>
-                        <p>Não foi possível conectar com o servidor.</p>
+                        <p>Tente recarregar a página</p>
+                        <button class="btn primary" onclick="loadData()" style="margin-top: 1rem;">
+                            <i class="fas fa-refresh"></i>
+                            Tentar Novamente
+                        </button>
                     </div>
                 `;
             } finally {
@@ -636,13 +564,13 @@
             
             if (appState.folders.length === 0) {
                 content.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-folder-open"></i>
-                        <h3>Nenhuma pasta ainda</h3>
+                    <div style="text-align: center; padding: 4rem; color: var(--text-600);">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>Nenhuma pasta criada</h3>
                         <p>Crie sua primeira pasta para organizar seus baralhos de estudo</p>
-                        <button class="btn primary" onclick="showCreateFolderModal()">
+                        <button class="btn primary" onclick="showCreateFolderModal()" style="margin-top: 1rem;">
                             <i class="fas fa-folder-plus"></i>
-                            Criar Pasta
+                            Criar Primeira Pasta
                         </button>
                     </div>
                 `;
@@ -653,24 +581,21 @@
                 const folderDecks = appState.decks.filter(deck => deck.folder_id === folder.id);
                 
                 return `
-                    <div class="folder">
+                    <div class="folder-card">
                         <div class="folder-header">
-                            <div class="folder-info">
-                                <i class="fas fa-folder-open folder-icon"></i>
-                                <h2 class="folder-name">${folder.name}</h2>
-                                <span class="deck-count">${folderDecks.length} baralho${folderDecks.length !== 1 ? 's' : ''}</span>
+                            <h3 class="folder-name">📁 ${folder.name}</h3>
+                            <div class="folder-actions">
+                                <button class="btn secondary" onclick="showCreateDeckModalForFolder('${folder.id}')" title="Adicionar baralho">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
-                            <button class="btn secondary" onclick="showCreateDeckModalForFolder(${folder.id})">
-                                <i class="fas fa-plus"></i>
-                                Adicionar Baralho
-                            </button>
                         </div>
                         
                         ${folderDecks.length === 0 ? `
-                            <div class="empty-state">
+                            <div class="empty-folder">
                                 <i class="fas fa-layer-group"></i>
                                 <p>Nenhum baralho nesta pasta</p>
-                                <button class="btn primary" onclick="showCreateDeckModalForFolder(${folder.id})">
+                                <button class="btn primary" onclick="showCreateDeckModalForFolder('${folder.id}')" style="margin-top: 1rem;">
                                     <i class="fas fa-plus"></i>
                                     Criar Primeiro Baralho
                                 </button>
@@ -678,7 +603,7 @@
                         ` : `
                             <div class="decks-grid">
                                 ${folderDecks.map(deck => `
-                                    <div class="deck-card" style="background-color: ${deck.color};" onclick="viewDeck(${deck.id})">
+                                    <div class="deck-card" onclick="viewDeck('${deck.id}')" style="background-color: ${deck.color || '#E3F2FD'};">
                                         <div class="deck-header-card">
                                             <h3 class="deck-name">${deck.name}</h3>
                                         </div>
@@ -689,7 +614,7 @@
                                                 <span>${deck.card_count || 0} cards</span>
                                             </div>
                                             ${(deck.card_count || 0) > 0 ? `
-                                                <button class="study-btn" onclick="event.stopPropagation(); startStudy(${deck.id})">
+                                                <button class="study-btn" onclick="event.stopPropagation(); startStudy('${deck.id}')">
                                                     <i class="fas fa-play"></i>
                                                     Estudar
                                                 </button>
@@ -707,10 +632,12 @@
         // Funções de loading
         function showLoading() {
             document.getElementById('loading').style.display = 'flex';
+            document.getElementById('content').style.display = 'none';
         }
 
         function hideLoading() {
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'grid';
         }
 
         // Funções de modal
@@ -772,11 +699,12 @@
                     renderContent();
                     hideCreateFolderModal();
                 } else {
-                    alert('Erro ao criar pasta');
+                    const errorData = await response.json();
+                    alert('Erro ao criar pasta: ' + (errorData.error || 'Erro desconhecido'));
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                alert('Erro ao criar pasta');
+                alert('Erro ao criar pasta: ' + error.message);
             }
         }
 
@@ -785,18 +713,18 @@
             event.preventDefault();
             const name = document.getElementById('deckName').value.trim();
             const description = document.getElementById('deckDescription').value.trim();
-            const folder_id = parseInt(document.getElementById('deckFolder').value);
+            const folderId = document.getElementById('deckFolder').value;
             
-            if (!name || !folder_id) return;
+            if (!name || !folderId) return;
 
             try {
                 const response = await fetch(`${API_BASE}/decks`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name, 
-                        description, 
-                        folder_id,
+                    body: JSON.stringify({
+                        name,
+                        description,
+                        folder_id: folderId,
                         color: '#E3F2FD'
                     })
                 });
@@ -807,11 +735,12 @@
                     renderContent();
                     hideCreateDeckModal();
                 } else {
-                    alert('Erro ao criar baralho');
+                    const errorData = await response.json();
+                    alert('Erro ao criar baralho: ' + (errorData.error || 'Erro desconhecido'));
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                alert('Erro ao criar baralho');
+                alert('Erro ao criar baralho: ' + error.message);
             }
         }
 
